@@ -1,0 +1,842 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="FROOOOOOO">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="服务网络可观测特性概要设计文档V21.  需求背景 讲清楚为什么要做这个需求（不要写因为老师安排你做了这个需求所以你做这个需求，而是结合你的调研情况，讲清楚在什么样的产业需求情况下，引发了老师安排你做或者你主动规划做这个需求）  1.1 面向服务消费者目前网络上的服务规模极其庞大，且具有海量交互、泛在分布、动态复杂等特点。服务消费者需要去网络上发现服务、使用服务、观测服务运行状态来完成自己的业务。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="概要设计-可观测">
+<meta property="og:url" content="http://example.com/2022/12/05/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E5%8F%AF%E8%A7%82%E6%B5%8B/index.html">
+<meta property="og:site_name" content="建木 - jianmucloud">
+<meta property="og:description" content="服务网络可观测特性概要设计文档V21.  需求背景 讲清楚为什么要做这个需求（不要写因为老师安排你做了这个需求所以你做这个需求，而是结合你的调研情况，讲清楚在什么样的产业需求情况下，引发了老师安排你做或者你主动规划做这个需求）  1.1 面向服务消费者目前网络上的服务规模极其庞大，且具有海量交互、泛在分布、动态复杂等特点。服务消费者需要去网络上发现服务、使用服务、观测服务运行状态来完成自己的业务。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/snos-observability/image-20221113161743727.png">
+<meta property="og:image" content="http://example.com/images/snos-observability/架构图.png">
+<meta property="og:image" content="http://example.com/images/snos-observability/image-20221118221147874.png">
+<meta property="article:published_time" content="2022-12-05T14:30:23.000Z">
+<meta property="article:modified_time" content="2022-12-06T08:08:04.887Z">
+<meta property="article:author" content="FROOOOOOO">
+<meta property="article:tag" content="概要设计">
+<meta property="article:tag" content="可观测">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/snos-observability/image-20221113161743727.png">
+  
+  
+  
+  <title>概要设计-可观测 - 建木 - jianmucloud</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"Qxo2c2IC6fxpmFzQM37jQCLC-MdYXbMMI","app_key":"qXFKz34vtiN9TmgyjaJFWJXT","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>建木</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="概要设计-可观测"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-12-05 22:30" pubdate>
+          2022年12月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          35 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">概要设计-可观测</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="服务网络可观测特性概要设计文档V2"><a href="#服务网络可观测特性概要设计文档V2" class="headerlink" title="服务网络可观测特性概要设计文档V2"></a>服务网络可观测特性概要设计文档V2</h1><h2 id="1-需求背景"><a href="#1-需求背景" class="headerlink" title="1.  需求背景"></a>1.  需求背景</h2><blockquote>
+<p>讲清楚为什么要做这个需求（不要写因为老师安排你做了这个需求所以你做这个需求，而是结合你的调研情况，讲清楚在什么样的产业需求情况下，引发了老师安排你做或者你主动规划做这个需求）</p>
+</blockquote>
+<h3 id="1-1-面向服务消费者"><a href="#1-1-面向服务消费者" class="headerlink" title="1.1 面向服务消费者"></a>1.1 面向服务消费者</h3><p>目前网络上的服务规模极其庞大，且具有海量交互、泛在分布、动态复杂等特点。服务消费者需要去网络上发现服务、使用服务、观测服务运行状态来完成自己的业务。然而服务与服务之间存在着壁垒，给服务的发现、使用、观测等都带来了困难。服务网络希望让服务消费者使用服务的过程尽可能的简单，能够很容易学习上手甚至开箱即用，而可观测特性在其中扮演了重要作用。</p>
+<p>传统的可观测系统：</p>
+<ul>
+<li>需要在部署服务时就预先准备好用于观测的探针，有的探针实现起来可能较麻烦</li>
+<li>功能相对分散，若要构建一个较全的可观测系统，需要使用多种可观测工具分别负责不同的观测功能</li>
+<li>无法适应越来越复杂的微服务架构和分布式架构</li>
+</ul>
+<p>依托服务网络的可观测系统：</p>
+<ul>
+<li>服务网络要求接入的服务预先设计好对应接口，即服务发布者发布服务时就需要提供可观测性接口，方便服务消费者观测使用的服务</li>
+<li>针对服务网络产生的异构数据，进行动态感知，建立多模态数据监控系统，实现监控指标、日志、调用链等多维异构数据的实时自动获取</li>
+<li>服务网络中服务的关系无时不刻不在变化、演化，可观测系统可以快速识别变化并及时更新服务状态</li>
+</ul>
+<h3 id="1-2-面向服务发布者"><a href="#1-2-面向服务发布者" class="headerlink" title="1.2 面向服务发布者"></a>1.2 面向服务发布者</h3><p>以往服务发布者如企业等角色，需要向公有云去购买服务器实例、集群等资源，亦或自己直接购买服务器，企业的运维人员配置完集群后还要配置网络环境。一切就绪后才能部署应用，带来了极高的门槛。如果服务发布者需要同时使用多个公有云或同时使用公有云和私有服务器，则会更加复杂。</p>
+<p>服务网络类似一个巨大的公有云，在大规模发布、管理服务上具有优势，其中服务网络可观测特性为大规模管理提供了基础。服务网络的管理运维不需要服务发布者参与，服务发布者只需要关注自己的服务。服务网络可观测特性为服务发布者提供：</p>
+<ul>
+<li>实时观测自己提供服务的使用量、网络流量、服务计量、计费信息等</li>
+<li>可观测系统会根据观测到的服务状态信息给出扩缩容建议</li>
+<li>可观测系统可以在服务发生异常时提供日志、调用链等信息辅助服务发布者修复异常</li>
+</ul>
+<p>当然服务发布者也可以不购买使用服务网络提供的云服务器，使用自己的私有服务器或者在其他公有云上部署服务，只要服务符合服务网络定义的规范，就可以接入服务网络，提供给服务消费者。</p>
+<h3 id="1-3-面向平台管理员"><a href="#1-3-面向平台管理员" class="headerlink" title="1.3 面向平台管理员"></a>1.3 面向平台管理员</h3><p>服务网络运行在一个大规模集群的基础上，集群的管理运维由平台管理员完成。大规模集群的运维对服务网络平台的管理员是一件较困难的工作。主要困难体现在：</p>
+<ul>
+<li>大规模集群的控制面apiserver和存储etcd集群无法保证高可用，可能无法及时响应</li>
+<li>大规模集群的调度sheduler调度效率较低</li>
+<li>大规模集群发生异常可能涉及服务众多，牵扯面极大</li>
+</ul>
+<p>所以服务网络可观测特性需要通过采集记录大规模集群运行时的指标和日志，运用数据挖掘和机器学习的方法帮助平台管理员提前预测可能发生的异常，并实现自动告警。当异常已经发生时，服务网络可观测特性是帮助平台管理员进行临时人工调度和找到异常、修复异常的最重要依据。</p>
+<h2 id="2-需求价值"><a href="#2-需求价值" class="headerlink" title="2.需求价值"></a>2.需求价值</h2><blockquote>
+<p>讲清楚这个需求做了之后，前面的需求背景中提到的当前业界面临的哪些痛点问题就可以解决掉了。</p>
+</blockquote>
+<p>相比于传统的服务集成，服务网络呈现跨网跨域场景、服务节点海量多元异构、逻辑结构交互复杂、网络规模尺度各异、主体间可信关系薄弱、网络时变演化等特点，给研究带来极大挑战。服务网络可观测特性来源于云原生可观测性，在云原生现有可观测能力上对服务网络的特性进行适配。可观测性一词来源于控制理论，是指系统可以由其外部输出判断其内部状态的程度。可观测性的基石指标、日志、链路数据能够帮助我们更好的理解运行的系统，为事前预防、事中处理、事后复盘提供了重要决策依据。</p>
+<h3 id="2-1-服务消费者：自动化、可自定义监控"><a href="#2-1-服务消费者：自动化、可自定义监控" class="headerlink" title="2.1 服务消费者：自动化、可自定义监控"></a>2.1 服务消费者：自动化、可自定义监控</h3><p>相比传统的监控系统，使用服务网络，服务消费者不需要再去自己部署探针、学习多种监控工具的使用，只需要学习服务网络对可观测插件规定的接口即可。服务发布者会按照要求提供监控接口，服务消费者调用对应接口即可，服务网络平台为用户提供一些封装好的可以满足对服务基本方面观测的指标。同时大量的原始监控指标也提供给服务消费者，服务消费者可以选择其中一些构成自定义的指标。服务网络可观测特性可以满足服务网络消费者全方位实时监控自己使用的服务的需求，保证可以快速发现服务不可用、服务失败。</p>
+<h3 id="2-2-服务发布者：全方位监控、服务部署监控一体化"><a href="#2-2-服务发布者：全方位监控、服务部署监控一体化" class="headerlink" title="2.2 服务发布者：全方位监控、服务部署监控一体化"></a>2.2 服务发布者：全方位监控、服务部署监控一体化</h3><p>服务网络为服务提供者提供其服务的监控功能，这让服务提供者只需要关注自己服务的业务流程，可观测方面只要按服务网络的接口规范提供接口即可。服务网络负责通过监控接口接管服务的监控，一方面可以让服务提供者监控自己的服务，另一方面可以把网络中的服务监控接口整合让平台管理员了解整个网络上服务的状态。</p>
+<h3 id="2-3-平台管理员：全方位智能化运维"><a href="#2-3-平台管理员：全方位智能化运维" class="headerlink" title="2.3 平台管理员：全方位智能化运维"></a>2.3 平台管理员：全方位智能化运维</h3><p>服务网络可观测特性可以保证服务网络运维人员对整个网络状态的了解，包括服务网络上的各种服务和服务器的状态，对网络上存在的服务故障进行检测，对网络上的异常流量异常调用进行追踪，对存在的安全隐患进行预警。特别是对于大规模跨网跨域场景，网络环境复杂,问题排查难度大，可观测特性可以辅助网络运维人员进行故障排查和决策。</p>
+<h2 id="3-需求功能描述"><a href="#3-需求功能描述" class="headerlink" title="3.需求功能描述"></a>3.需求功能描述</h2><blockquote>
+<p>讲清楚你的这个需求，做完之后，具体实现了那几条功能，注意这个和第二点需求价值的区别，需求价值是讲你通过这个需求实现，解决了哪些痛点问题，而需求功能描述是指具体到软件工程语言的，你所实现的基本功能条目，言简意赅、精准描述。</p>
+</blockquote>
+<p>当前云原生可观测性能力有三大支柱：日志事件（Logging），分布式链路追踪（Tracing）以及指标监控（Metrics）。指标，是一段时间内记录的各个维度的量化信息，用来观察系统的某些状态和趋势；日志，是对程序运行过程中产生的一些离散事件的记录；链路追踪，是对一次请求从接收到处理完毕整个生命周期内的调用链路的记录。服务网络可观测特性主要实现的功能包括服务数据采集与可视化功能、预警提醒功能、故障检测与分析功能。</p>
+<h3 id="3-1-数据采集功能"><a href="#3-1-数据采集功能" class="headerlink" title="3.1 数据采集功能"></a>3.1 数据采集功能</h3><p>数据采集包括服务数据采集和集群数据采集：</p>
+<p>服务数据采集主要包括对服务运行过程产生的日志、指标和链路信息的数据采集，采集后根据设置的规则存储一段时间供用户查询和数据挖掘。通过对目前主流的可观测工具Prometheus、Elasticsearch和Skywalking进行封装整合，兼容OpenTelementry规范，提供接口规范给服务提供者，提供接口给服务使用者和平台管理员；集群数据采集主要包括对服务网络依托的服务器或集群的运行数据进行采集和存储。</p>
+<h3 id="3-2-可视化功能"><a href="#3-2-可视化功能" class="headerlink" title="3.2 可视化功能"></a>3.2 可视化功能</h3><p>可视化能力是面向所有服务网络参与者的，是对采集到的数据可视化呈现给参与者的能力。服务消费者选择要使用的服务，然后可以使用服务网络提供的封装指标或使用原生指标自己封装指标，再通过可视化图表显示出来，方便监控自己使用的服务状态；服务提供者则可以实时监视自己的服务使用量以及部署服务的服务器或集群的状态；平台管理员可以看到整个网络的服务状态，以及承载网络的集群的存储、CPU、内存、网络流量等负载指标的可视化图表。</p>
+<h3 id="3-3-告警提醒功能"><a href="#3-3-告警提醒功能" class="headerlink" title="3.3 告警提醒功能"></a>3.3 告警提醒功能</h3><p>分为对服务的告警和对集群的告警。服务数据采集可以采集到服务的各项数据，通过设置告警规则，可以在触发规则时提醒对应服务网络参与者。对集群设置告警也同理。</p>
+<h3 id="3-4-故障检测与分析功能"><a href="#3-4-故障检测与分析功能" class="headerlink" title="3.4 故障检测与分析功能"></a>3.4 故障检测与分析功能</h3><p>基于统计模型和机器学习的方法，检测服务和集群的各指标是否存在异常，如果存在可以通过链路追踪能力辅助分析故障的原因。</p>
+<h2 id="4-需求在整体系统功能图中所处的位置"><a href="#4-需求在整体系统功能图中所处的位置" class="headerlink" title="4.需求在整体系统功能图中所处的位置"></a>4.需求在整体系统功能图中所处的位置</h2><blockquote>
+<p>基于功能图的示意图，细化到模块粒度</p>
+</blockquote>
+<img src="/images/snos-observability/image-20221113161743727.png" srcset="/img/loading.gif" lazyload alt="image-20221113161743727" style="zoom:67%;" />
+
+
+
+
+
+<h2 id="5-需求在整体系统架构图中所处的位置"><a href="#5-需求在整体系统架构图中所处的位置" class="headerlink" title="5.需求在整体系统架构图中所处的位置"></a>5.需求在整体系统架构图中所处的位置</h2><blockquote>
+<p>基于架构图的示意图，细化到模块粒度</p>
+</blockquote>
+<img src="/images/snos-observability/架构图.png" srcset="/img/loading.gif" lazyload alt="架构图" style="zoom: 67%;" />
+
+
+
+<h2 id="6-需求在整体业务流程中所承载的流程"><a href="#6-需求在整体业务流程中所承载的流程" class="headerlink" title="6.需求在整体业务流程中所承载的流程"></a>6.需求在整体业务流程中所承载的流程</h2><blockquote>
+<p>基于流程图的示意图，细化到模块粒度</p>
+</blockquote>
+<p><img src="/images/snos-observability/image-20221118221147874.png" srcset="/img/loading.gif" lazyload alt="image-20221118221147874"></p>
+<h2 id="7-需求对外暴露的接口能力描述"><a href="#7-需求对外暴露的接口能力描述" class="headerlink" title="7.需求对外暴露的接口能力描述"></a>7.需求对外暴露的接口能力描述</h2><blockquote>
+<p>不是直接把API写出来，而是写你这个API要实现的功能是哪些，言简意赅</p>
+</blockquote>
+<h3 id="7-1-原始数据查询接口"><a href="#7-1-原始数据查询接口" class="headerlink" title="7.1 原始数据查询接口"></a>7.1 原始数据查询接口</h3><p>面向所有服务网络参与者，查询可以根据标签进行筛选。原始数据指服务网络监控系统原生支持的指标数据，包括服务的原始数据和集群的原始数据。服务消费者可以查询自己正在使用的服务的部分原始数据信息。服务发布者可以查询自己正在提供的服务的所有原始数据信息，平台管理员可以查看服务网络上所有的服务的部分原始数据和网络集群的所有原始数据信息。</p>
+<h3 id="7-2-统计数据查询接口"><a href="#7-2-统计数据查询接口" class="headerlink" title="7.2 统计数据查询接口"></a>7.2 统计数据查询接口</h3><p>面向服务发布者和服务消费者。服务发布者可以自定义一些服务指标，然后通过此接口查询，并且可以通过此接口向服务消费者暴露一些自定义的服务指标。</p>
+<h3 id="7-3-服务日志查询接口"><a href="#7-3-服务日志查询接口" class="headerlink" title="7.3 服务日志查询接口"></a>7.3 服务日志查询接口</h3><p>面向服务提供者、服务消费者。服务提供者、服务消费者可以查询服务运行期间产生的日志。</p>
+<h3 id="7-4-告警接口"><a href="#7-4-告警接口" class="headerlink" title="7.4 告警接口"></a>7.4 告警接口</h3><p>面向所有服务网络参与者。可以对于服务或集群的告警规进行增删改查，触发规则时会告警通知相应参与者。可以查看已经触发的告警。</p>
+<h3 id="7-5-异常预测结果查询接口"><a href="#7-5-异常预测结果查询接口" class="headerlink" title="7.5 异常预测结果查询接口"></a>7.5 异常预测结果查询接口</h3><p>面向服务提供者、服务消费者。系统会记录服务一段时间的运行数据，进行数据挖掘、模式识别，当检测到与规律不符的运行状态信息时会预测出现了异常。</p>
+<h2 id="8-需求的模块组成及介绍"><a href="#8-需求的模块组成及介绍" class="headerlink" title="8.需求的模块组成及介绍"></a>8.需求的模块组成及介绍</h2><blockquote>
+<p>模块1的功能描述，输⼊、输出、处理逻辑、与其他模块的交互逻辑、处于系统中的逻辑位置、处于部署系统中的物理位置</p>
+</blockquote>
+<h3 id="8-1-数据采集模块"><a href="#8-1-数据采集模块" class="headerlink" title="8.1 数据采集模块"></a>8.1 数据采集模块</h3><p><strong>功能描述</strong></p>
+<ul>
+<li>对服务数据进行采集存储</li>
+<li>对集群信息进行采集存储</li>
+<li>将采集到的数据可视化，方便实时监控</li>
+</ul>
+<p><strong>输入</strong></p>
+<p><strong>输出</strong></p>
+<p><strong>处理逻辑</strong></p>
+<p><strong>交互逻辑</strong></p>
+<p><strong>处于系统中的逻辑位置</strong></p>
+<p><strong>处于部署系统中的物理位置</strong></p>
+<h3 id="8-2-可视化模块"><a href="#8-2-可视化模块" class="headerlink" title="8.2 可视化模块"></a>8.2 可视化模块</h3><p><strong>功能描述</strong></p>
+<ul>
+<li>对服务数据进行采集存储</li>
+<li>对集群信息进行采集存储</li>
+<li>将采集到的数据可视化，方便实时监控</li>
+</ul>
+<p><strong>输入</strong></p>
+<p><strong>输出</strong></p>
+<p><strong>处理逻辑</strong></p>
+<p><strong>交互逻辑</strong></p>
+<p><strong>处于系统中的逻辑位置</strong></p>
+<p><strong>处于部署系统中的物理位置</strong></p>
+<h3 id="8-3-告警提醒模块"><a href="#8-3-告警提醒模块" class="headerlink" title="8.3 告警提醒模块"></a>8.3 告警提醒模块</h3><p><strong>功能描述</strong></p>
+<p>触发规则时提醒对应服务网络参与者</p>
+<p><strong>输入</strong></p>
+<p><strong>输出</strong></p>
+<p><strong>处理逻辑</strong></p>
+<p><strong>交互逻辑</strong></p>
+<p><strong>处于系统中的逻辑位置</strong></p>
+<p><strong>处于部署系统中的物理位置</strong></p>
+<h3 id="8-4-故障检测与分析模块"><a href="#8-4-故障检测与分析模块" class="headerlink" title="8.4 故障检测与分析模块"></a>8.4 故障检测与分析模块</h3><p><strong>功能描述</strong></p>
+<p>检测服务和集群的各指标是否存在异常</p>
+<p><strong>输入</strong></p>
+<p><strong>输出</strong></p>
+<p><strong>处理逻辑</strong></p>
+<p><strong>交互逻辑</strong></p>
+<p><strong>处于系统中的逻辑位置</strong></p>
+<p><strong>处于部署系统中的物理位置</strong></p>
+<h2 id="9-需求模块涉及到的新增数据结构和对已有数据结构的改动"><a href="#9-需求模块涉及到的新增数据结构和对已有数据结构的改动" class="headerlink" title="9.需求模块涉及到的新增数据结构和对已有数据结构的改动"></a>9.需求模块涉及到的新增数据结构和对已有数据结构的改动</h2><h2 id="10-需求模块涉及到的新增数据结构和对已有数据结构的改动"><a href="#10-需求模块涉及到的新增数据结构和对已有数据结构的改动" class="headerlink" title="10.需求模块涉及到的新增数据结构和对已有数据结构的改动"></a>10.需求模块涉及到的新增数据结构和对已有数据结构的改动</h2><h2 id="11-需求的UCD设计"><a href="#11-需求的UCD设计" class="headerlink" title="11.需求的UCD设计"></a>11.需求的UCD设计</h2><h2 id="12-需求的参与者与开发进度规划"><a href="#12-需求的参与者与开发进度规划" class="headerlink" title="12.需求的参与者与开发进度规划"></a>12.需求的参与者与开发进度规划</h2><p>参与者：陈宸，程立业</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1/" class="category-chain-item">概要设计</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1/">#概要设计</a>
+      
+        <a href="/tags/%E5%8F%AF%E8%A7%82%E6%B5%8B/">#可观测</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>概要设计-可观测</div>
+      <div>http://example.com/2022/12/05/概要设计-可观测/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>FROOOOOOO</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年12月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/12/05/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E5%8C%BA%E5%9D%97%E9%93%BE/" title="概要设计-区块链">
+                        <span class="hidden-mobile">概要设计-区块链</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"Qxo2c2IC6fxpmFzQM37jQCLC-MdYXbMMI","appKey":"qXFKz34vtiN9TmgyjaJFWJXT","path":"window.location.pathname","placeholder":"发表你的看法","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
