@@ -1,0 +1,1026 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="FROOOOOOO">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="需求背景 讲清楚为什么要做这个需求（不要写因为老师安排你做了这个需 求所以你做这个需求，⽽是结合你的调研情况，讲清楚在什么样的产业需求情况下，引发了⽼师安排你做或者你主动规划做这个需求）   传统服务发布、部署和管控问题 ​    在传统服务网络场景下，服务提供商向外界提供服务需要保证如下工作：  在本地搭建服务运行环境，并将服务部署到运行环境中，同时保持服务的无间断运行，从而保证服务使用者在任何">
+<meta property="og:type" content="article">
+<meta property="og:title" content="概要设计-云边协同">
+<meta property="og:url" content="http://example.com/2022/12/24/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/index.html">
+<meta property="og:site_name" content="建木 - jianmucloud">
+<meta property="og:description" content="需求背景 讲清楚为什么要做这个需求（不要写因为老师安排你做了这个需 求所以你做这个需求，⽽是结合你的调研情况，讲清楚在什么样的产业需求情况下，引发了⽼师安排你做或者你主动规划做这个需求）   传统服务发布、部署和管控问题 ​    在传统服务网络场景下，服务提供商向外界提供服务需要保证如下工作：  在本地搭建服务运行环境，并将服务部署到运行环境中，同时保持服务的无间断运行，从而保证服务使用者在任何">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/edge-cluster-mode.jpg">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/unified-access-mode.jpg">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/edge-architecture-envision.jpg">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/dependent-service-app.jpg">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/dependent-service-application-and-client-service-application.jpg">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/independent-service-app.jpg">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/edge-resource-accessing-flow-chart.jpg">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/edge-resource-twin-capabilities.jpg">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/service-intelligent-deployment-capabilities.jpg">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/cloud-edge-migration-capabilities.jpg">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/edge-collaboration-function.jpg">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/edge-autonomy-capabilities.jpg">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/image1.png">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/image2.png">
+<meta property="og:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/image3.jpg">
+<meta property="article:published_time" content="2022-12-24T15:12:23.000Z">
+<meta property="article:modified_time" content="2022-12-24T15:48:28.985Z">
+<meta property="article:author" content="FROOOOOOO">
+<meta property="article:tag" content="概要设计">
+<meta property="article:tag" content="云边协同">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/edge-cluster-mode.jpg">
+  
+  
+  
+  <title>概要设计-云边协同 - 建木 - jianmucloud</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"Qxo2c2IC6fxpmFzQM37jQCLC-MdYXbMMI","app_key":"qXFKz34vtiN9TmgyjaJFWJXT","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>建木</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="概要设计-云边协同"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-12-24 23:12" pubdate>
+          2022年12月24日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          62 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">概要设计-云边协同</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="需求背景"><a href="#需求背景" class="headerlink" title="需求背景"></a>需求背景</h1><blockquote>
+<p>讲清楚为什么要做这个需求（不要写因为老师安排你做了这个需 求所以你做这个需求，⽽是结合你的调研情况，讲清楚<strong>在什么样的产业需求情况下</strong>，引发了⽼师安排你做或者你<strong>主动规划做这个需求</strong>） </p>
+</blockquote>
+<h2 id="传统服务发布、部署和管控问题"><a href="#传统服务发布、部署和管控问题" class="headerlink" title="传统服务发布、部署和管控问题"></a>传统服务发布、部署和管控问题</h2><ul>
+<li><p>​    在传统服务网络场景下，服务提供商向外界提供服务需要保证如下工作：</p>
+<ol>
+<li>在本地搭建服务运行环境，并将服务部署到运行环境中，同时保持服务的无间断运行，从而保证服务使用者在任何时间都可以调用服务提供商已经发布的服务</li>
+<li>向外界提供服务的期间，服务提供商需要管理服务运行依赖的基础设施，同时服务调用过程中产生的调度、监控运维问题也需服务提供商自行解决</li>
+</ol>
+</li>
+<li><p>​      因此，服务提供商向外界提供服务的过程中需要完成大量冗余、不必要的工作，同时也占用了部分资源来维持服务的运行，这些问题打击了服务生态发展的积极性；更重要的是，服务网络也受到了许多影响：</p>
+<ol>
+<li>由于服务提供商提供的服务均被部署运行在自行搭建的运行环境，发布的服务只对外界提供web API，服务网络平台无法对全局服务进行统一的有效管理和监管。</li>
+<li>服务网络平台无法对全局网络进行有效的调度，无法从根源上解决网络堵塞、负载过重的问题，整体网络不能达到一个良好的负载均衡、资源使用合理的状态。</li>
+</ol>
+</li>
+</ul>
+<h2 id="故障情况下服务质量的问题（涉及到服务托管、边缘自治）"><a href="#故障情况下服务质量的问题（涉及到服务托管、边缘自治）" class="headerlink" title="故障情况下服务质量的问题（涉及到服务托管、边缘自治）"></a>故障情况下服务质量的问题（涉及到服务托管、边缘自治）</h2><p>​        在传统的服务网络场景下，客户和服务注册中心无可避免会遇到一些故障问题，如网络波动和断开、硬件设施损坏、断电等等，这些问题都将会影响服务提供和使用的流程。例如，当服务提供方与外部或注册中心断开，其发布的服务将无法继续为其订阅者提供正常的调用；当服务消费方与外部或注册中心断开，其订阅的服务将无法进行访问，从而影响服务的继续使用。因此，如何在一些故障情况下，为客户提供更加良好的服务体验，保障服务质量，是我们需要思考和解决的课题。</p>
+<h2 id="边缘低时延场景问题"><a href="#边缘低时延场景问题" class="headerlink" title="边缘低时延场景问题"></a>边缘低时延场景问题</h2><p>​        在传统的服务网络中，服务提供者基本是将服务应用部署在自己内部，服务使用者如果需要使用服务，必须跨越公网访问服务和传输数据，一般无法满足对时延要求极高的边缘场景需求。少部分考虑到边缘需求的服务提供者，会试图将服务应用部署在服务使用方以解决低时延需求，但过程的实现均需要服务发布商和服务使用方提供相关的技术人员来部署服务及后续运维，对双方都是极其麻烦而耗时耗力的事情。</p>
+<h1 id="需求价值"><a href="#需求价值" class="headerlink" title="需求价值"></a>需求价值</h1><blockquote>
+<p>讲清楚这个需求做了之后，前⾯的需求背景中提到的当前业界⾯临的哪些痛点问题就可以解决掉了。</p>
+</blockquote>
+<p>客户：服务发布者（提供者）、服务消费者（使用者）</p>
+<p>云端：服务网络</p>
+<p>边缘：客户方</p>
+<h2 id="健康服务生态：客户资源与服务托管，规范服务全生命周期，打造可持续服务环境，网络驱动服务生态发展"><a href="#健康服务生态：客户资源与服务托管，规范服务全生命周期，打造可持续服务环境，网络驱动服务生态发展" class="headerlink" title="健康服务生态：客户资源与服务托管，规范服务全生命周期，打造可持续服务环境，网络驱动服务生态发展"></a>健康服务生态：客户资源与服务托管，规范服务全生命周期，打造可持续服务环境，网络驱动服务生态发展</h2><p>​        客户边缘资源的接入及服务的统一管理不仅给服务网络带来更多高效能力实现的可能性，让客户能够享受到更贴心的功能，使得使用产品的过程变得更加美好，更重要的是能够规范服务、管理服务的整个生命周期，并激励服务生态的健康可持续发展。</p>
+<p>​        简单来说，服务网络将服务的整个生命周期都进行了规范和统一管理。服务按照标准进行发布，其服务应用交由服务网络来统一进行部署、运行、监控、调度。如此一来，一是极为有效地提高了服务网络对于服务的全局监控、监管能力；二是服务部署将不再局限于服务提供者内部，基于云边协同的服务智能部署、调度为实现服务的持续可靠、边缘低时延需求的满足带来了极大可能性。</p>
+<h2 id="Serverless边缘：无需关注基础设施，让客户专注于服务本身"><a href="#Serverless边缘：无需关注基础设施，让客户专注于服务本身" class="headerlink" title="Serverless边缘：无需关注基础设施，让客户专注于服务本身"></a>Serverless边缘：无需关注基础设施，让客户专注于服务本身</h2><p>客户的边缘资源接入到服务网络后，会由服务网络进行统一管理，对于客户来说：</p>
+<ul>
+<li>对服务相关的所有操作，包括注册、发布、管理、订阅、部署、监控、计费等，都可在提供的服务可视化平台上进行，实现平台统一管理。</li>
+<li>服务提供者层面：将服务注册至服务网络平台上后，便不再需要将注意力分散在上述的传统服务发布流程上，使双手从环境搭建、服务部署、运维管理等繁琐的操作中解放，让服务提供者无需关心基础设施而是更加专注于服务本身，可以为服务提供者降低开发成本、提高生产效率，优化服务质量。</li>
+<li>服务使用者层面：服务应用的统一管理，使得服务使用的可靠性、持续性、无感性都能得到较好的保障，最终提高服务使用者的满意度。另外，消费者针对服务的一些特殊需求，例如对于某些服务的QoS需求，服务网络平台也将有可能满足。</li>
+</ul>
+<h2 id="服务智能：基于云边协同的服务智能部署、监控与调度满足客户各种需求"><a href="#服务智能：基于云边协同的服务智能部署、监控与调度满足客户各种需求" class="headerlink" title="服务智能：基于云边协同的服务智能部署、监控与调度满足客户各种需求"></a>服务智能：基于云边协同的服务智能部署、监控与调度满足客户各种需求</h2><p>​        客户的边缘资源接入到服务网络后，将会由服务网络进行统一管理，并提供服务可视化平台，服务客户可以在平台上完成对服务的注册、发布、管理、订阅等操作；服务被发布或订阅后，将会由服务网络进行统一、智能地部署、监控、调度，以满足客户各种需求，具体来说：</p>
+<ul>
+<li>实现服务统一管理、全局流量监控：（服务管理、服务可信、流量计费、服务调用链）<ul>
+<li>通过实时监测统一管理的服务和客户端边缘节点的状态，可以做到在发生故障后向客户发出预警，采取相应措施维护服务稳定和质量。</li>
+<li>可以通过区块链技术实现服务可信化，保证服务的可靠性和不可篡改性。同时根据服务调用链对服务进行智能计费，确保每一位客户的收支无误。</li>
+<li>通过对全局流量进行监控，对服务部署位置及调用路径进行智能决策，保证服务网络负载均衡的良好状态。</li>
+</ul>
+</li>
+<li>实现服务的持续可靠：（服务智能调度、云边迁移、边缘自治）服务应用运行的过程中，总会遇到一些无可避免的网络或硬件故障问题，从而影响到服务的持续可靠，得益于服务网络对客户资源与服务的统一管理，其拥有了基于云边协同的服务智能部署、监控与调度等能力，详细来说：<ul>
+<li>对于客户双边：服务网络会实时监测客户边缘硬件资源以及服务应用的状态，若出现问题，则可以在服务可视化平台上及时进行通知，达到最小化损失。</li>
+<li>对于服务发布者层面：（云边迁移，实现服务持续提供）当边缘资源与服务网络或外部网络断开时，部署、运行在自身内部的服务就不能继续对外提供访问。服务网络及时发现后，对于客户原本的一些无依赖型服务应用可以提供云边迁移功能，即将服务应用迁移至服务网络的一些计算资源上运行，实现服务提供的持续可靠。</li>
+<li>对于服务消费者层面：（边缘自治，实现服务离线运行）当边缘资源与服务网络或外部网络断开时，客户就无法继续访问部署、运行在外部的服务，但对于原本部署、运行在客户边缘的服务应用则可以执行合适的离线策略，继续为客户提供服务；对于某些部署、运行在外部的无依赖服务应用，边缘若拥有其服务应用镜像并且其服务支持，则也可以临时在边缘部署、运行。</li>
+</ul>
+</li>
+<li>满足边缘低时延场景需求：服务使用者边缘资源接入到服务网络中后，服务网络就可以在服务使用者边缘完成部分服务的部署和调度，以达到服务API的低时延调用，满足一些边缘低时延场景需求。该场景需求本质上需要服务提供者进行应用的支持，而服务网络平台就可以提供这样一种服务的模板和规范，做到服务发布者和消费者的双边解耦，无需关注复杂的流程而只需关注服务本身即可，这对于客户来说是十分便捷的。</li>
+</ul>
+<h1 id="服务网络架构设想"><a href="#服务网络架构设想" class="headerlink" title="服务网络架构设想"></a>服务网络架构设想</h1><h2 id="1-边缘层级划分"><a href="#1-边缘层级划分" class="headerlink" title="1 边缘层级划分"></a>1 边缘层级划分</h2><ul>
+<li>边缘集群模式。服务网络在客户边缘集群上部署一套K8s（或者轻量级的K3s），在节点注册接入后进行自动选举Master。</li>
+</ul>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/edge-cluster-mode.jpg" srcset="/img/loading.gif" lazyload alt="边缘集群模式"></p>
+<p>边缘集群模式的边缘依然需要运维，因此不太适合。</p>
+<ul>
+<li>统一接入模式。接入到云端K8s-Master进行统一节点管理。这种模式类似于KubeEdge模式</li>
+</ul>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/unified-access-mode.jpg" srcset="/img/loading.gif" lazyload alt="统一接入模式"></p>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/edge-architecture-envision.jpg" srcset="/img/loading.gif" lazyload alt="项目中边缘架构设想"></p>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/dependent-service-app.jpg" srcset="/img/loading.gif" lazyload alt="依赖型服务应用"></p>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/dependent-service-application-and-client-service-application.jpg" srcset="/img/loading.gif" lazyload alt="依赖型服务应用+客户端服务应用"></p>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/independent-service-app.jpg" srcset="/img/loading.gif" lazyload alt="无依赖型服务应用"></p>
+<h2 id="2-服务定义与分类"><a href="#2-服务定义与分类" class="headerlink" title="2 服务定义与分类"></a>2 服务定义与分类</h2><p>服务=服务的描述+一个或多个的服务应用（服务应用提供一组API）</p>
+<p>服务应用需要进行部署、运行后提供API </p>
+<p>服务提供商提供服务的相关文件至服务注册中心，服务应用可被分为三种类型：</p>
+<ol>
+<li><strong>依赖型服务应用</strong></li>
+<li><strong>无依赖型服务应用</strong></li>
+<li><strong>客户端服务应用</strong></li>
+</ol>
+<p>根据场景分类，服务可分为三种模式：</p>
+<ol>
+<li><strong>依赖型服务应用</strong>。最常见的一种API式服务模式。</li>
+<li><strong>无依赖型服务应用</strong>。可部署在服务网络上、使用者边缘（满足低时延）等等，可自由按需使用。</li>
+<li><strong>依赖型服务应用</strong> + <strong>客户端服务应用</strong>。常见于低时延场景、云边协同场景，如工业边缘AI服务等。</li>
+</ol>
+<h2 id="3-服务部署"><a href="#3-服务部署" class="headerlink" title="3 服务部署"></a>3 服务部署</h2><p>服务网络根据服务类型及应用场景进行智能部署。</p>
+<ol>
+<li><strong>依赖型服务应用</strong>依赖服务提供者自身内部资源的应用，因此<strong>必须部署于发布者边缘或交换机</strong>上。</li>
+<li><strong>无依赖型服务应用可部署于任何地方</strong>。</li>
+<li><strong>客户端服务应用</strong>是依赖型服务应用的客户端，<strong>主要用于边缘场景</strong>，如边缘AI任务中的边缘推理，<strong>一般部署在使用者边缘或交换机上</strong>。当其使用其服务的某些功能需要与依赖型服务应用进行数据通信完成。</li>
+</ol>
+<h1 id="需求功能描述"><a href="#需求功能描述" class="headerlink" title="需求功能描述"></a>需求功能描述</h1><blockquote>
+<p>讲清楚你的这个需求，做完之后，具体实现了那⼏条功能，注意这个和第⼆点需求价值的区别，需求价值是讲你通过这个需求实现，解决了哪些痛点问题，⽽需求功能描述是指具体到软件⼯程语⾔的，你所实现的基本功能条⽬，⾔简意赅、精准描述。 </p>
+</blockquote>
+<h2 id="1-云边协同"><a href="#1-云边协同" class="headerlink" title="1 云边协同"></a>1 云边协同</h2><p>服务网络云边协同具体含义为客户边缘端与服务网络端间的数据交互协同，具体又分为：</p>
+<ul>
+<li>服务发布者边缘端和服务网络云边协同</li>
+<li>服务消费者边缘端和服务网络云边协同</li>
+</ul>
+<h3 id="1-1-边端资源接入"><a href="#1-1-边端资源接入" class="headerlink" title="1.1 边端资源接入"></a>1.1 边端资源接入</h3><ol>
+<li>边缘资源注册：通过在服务可视化平台上申请边缘资源的加入，提供一定信息后，创建边缘资源抽象。</li>
+<li>边缘资源接入程序安装：平台提供接入程序和指导，按照提供的指导步骤完成接入程序安装。</li>
+<li>运行接入程序，进行自动配置与接入。</li>
+<li>接入成功后，服务可视化平台即提示接入成功并展示相应的资源抽象界面。</li>
+</ol>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/edge-resource-accessing-flow-chart.jpg" srcset="/img/loading.gif" lazyload alt="边缘资源接入流程图"></p>
+<h3 id="1-2-边缘资源孪生"><a href="#1-2-边缘资源孪生" class="headerlink" title="1.2 边缘资源孪生"></a>1.2 边缘资源孪生</h3><p>​      监控边缘资源的硬件状态，包括CPU、内存、磁盘等状态，以及服务资源、应用资源等状态，并上传至云端服务网络，与客户边缘资源抽象进行同步。</p>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/edge-resource-twin-capabilities.jpg" srcset="/img/loading.gif" lazyload alt="边缘资源孪生功能"></p>
+<h3 id="1-3-服务智能部署"><a href="#1-3-服务智能部署" class="headerlink" title="1.3 服务智能部署"></a>1.3 服务智能部署</h3><p>服务网络根据服务类型、应用场景以及网络和资源状况对服务进行智能部署。</p>
+<ol>
+<li>依赖型服务应用依赖服务提供者自身内部资源，因此服务网络会将其部署于<strong>发布者边缘</strong>上。</li>
+<li>无依赖型服务应用可部署于任何地方，具体部署位置由当前网络和资源状况、客户需求来决定。<ol>
+<li>当客户对服务部署有特定需求时，如低时延，服务网络会将客户需求放至第一顺位，配合当前网络和资源状况对全局进行搜索筛选匹配，选择最优服务部署位置。</li>
+<li>若客户对服务部署没有特定要求，服务网络在选择服务部署位置时，会将网络和资源状况作为最主要决策因素，通过智能部署算法来决定最终部署位置。</li>
+</ol>
+</li>
+<li>客户端服务应用是依赖型服务应用的客户端，主要用于边缘场景，如边缘AI任务中的边缘推理，一般被部署在<strong>使用者边缘</strong>上。</li>
+</ol>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/service-intelligent-deployment-capabilities.jpg" srcset="/img/loading.gif" lazyload alt="服务智能部署功能"></p>
+<h3 id="1-4-服务智能调度（应用云边迁移）"><a href="#1-4-服务智能调度（应用云边迁移）" class="headerlink" title="1.4 服务智能调度（应用云边迁移）"></a>1.4 服务智能调度（应用云边迁移）</h3><ol>
+<li>当监测到某个服务应用出现连接不稳定等网络状况或者故障时，服务网络会及时采取相应措施，做到客户视角的可靠、稳定、无感的服务使用体验。<ol>
+<li>连接客户与服务应用之间的路径负载失衡：对二者间的路由进行重新计算，在下一次调用时根据新路由进行转发调用。</li>
+<li>服务出现故障：停止出现故障的服务应用，全局搜索服务网络中满足客户需求的最优服务应用副本，若不存在满足条件的服务应用副本，服务网络可以自动智能部署新的服务应用副本来满足客户需求。</li>
+</ol>
+</li>
+<li>当边缘资源与服务网络或外部网络断开时，服务网络会在第一时间向客户告警，做到将损失最小化。对于部署在该边缘端的一些无依赖型服务应用可以提供云边迁移功能，即将与服务网络断联的服务应用进行再生副本，并将再生副本迁移至服务网络中的一些计算资源上运行，做到逻辑上的云边迁移，实现服务提供的持续可靠及用户角度的无感替换。</li>
+</ol>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/cloud-edge-migration-capabilities.jpg" srcset="/img/loading.gif" lazyload alt="云边迁移功能"></p>
+<h2 id="2-边边协同"><a href="#2-边边协同" class="headerlink" title="2 边边协同"></a>2 边边协同</h2><ol>
+<li>针对客户边缘内部设备节点资源的协同，为设备资源间创建快速通道，实现边缘内部节点的互相感知和数据传输。（类似于KubeEdge中的EdgeMesh）</li>
+<li>针对服务应用间的协同，为服务应用间创建快速通道。</li>
+</ol>
+<blockquote>
+<p>例如【<strong>依赖型服务应用</strong> + <strong>客户端服务应用】</strong>这种应用模式，我们可以为这两个服务应用提供的快速数据传输的通道，屏蔽一些复杂的远程数据操作，以便于服务发布者对该类应用模式的开发。</p>
+</blockquote>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/edge-collaboration-function.jpg" srcset="/img/loading.gif" lazyload alt="边边协同功能"></p>
+<h2 id="3-边缘自治"><a href="#3-边缘自治" class="headerlink" title="3 边缘自治"></a>3 边缘自治</h2><p>边缘自治主要针对服务消费者端，目的是为了在边缘故障情况下，实现服务的持续可靠。</p>
+<ul>
+<li>针对消费者边缘与服务网络断开的情况，对于原本部署、运行在客户边缘的服务应用则执行针对改客户的<strong>离线策略</strong>，继续运行并为客户提供服务；对于某些原本部署、运行在外部的无依赖服务应用，若该服务支持<strong>离线策略</strong>，则临时部署在边缘并运行（这需要在边缘存储该类型服务应用的镜像），继续提供服务。</li>
+<li>针对在上述状况的基础上，资源故障或重启的情况，考虑边缘多设备，若原本运行的服务应用受到影响，则进行边缘水平迁移，将服务应用重新部署、运行在其他正常的节点上。</li>
+</ul>
+<p><strong>离线策略</strong>：消费者边缘故障后，限定一段时间内继续使用服务，超过限定时间后不再提供服务。这一段时间可以根据企业的信用来设置，比如大企业设置一周，小企业一天。</p>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/edge-autonomy-capabilities.jpg" srcset="/img/loading.gif" lazyload alt="边缘自治功能"></p>
+<h1 id="需求在整体系统功能图中所处的位置"><a href="#需求在整体系统功能图中所处的位置" class="headerlink" title="需求在整体系统功能图中所处的位置"></a>需求在整体系统功能图中所处的位置</h1><blockquote>
+<p>基于功能图的⽰意图，细化到模块粒度</p>
+</blockquote>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/image1.png" srcset="/img/loading.gif" lazyload alt="云边协同在整体系统功能图中所处的位置 "></p>
+<h1 id="需求在整体系统架构图中所处的位置"><a href="#需求在整体系统架构图中所处的位置" class="headerlink" title="需求在整体系统架构图中所处的位置"></a>需求在整体系统架构图中所处的位置</h1><blockquote>
+<p>基于架构图的⽰意图，细化到模块粒度 </p>
+</blockquote>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/image2.png" srcset="/img/loading.gif" lazyload alt="云边协同在整体系统架构图中所处的位置 "></p>
+<h1 id="需求在整体业务流程中所承载的流程"><a href="#需求在整体业务流程中所承载的流程" class="headerlink" title="需求在整体业务流程中所承载的流程"></a>需求在整体业务流程中所承载的流程</h1><blockquote>
+<p>基于流程图的⽰意图，细化到模块粒度 </p>
+</blockquote>
+<p>服务发布、部署、使用流程图</p>
+<p><img src="/images/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/image3.jpg" srcset="/img/loading.gif" lazyload alt="流程图"></p>
+<h1 id="需求对外部暴露的接口能力描述"><a href="#需求对外部暴露的接口能力描述" class="headerlink" title="需求对外部暴露的接口能力描述"></a>需求对外部暴露的接口能力描述</h1><blockquote>
+<p>不是直接把API写出来，⽽是写你这个API要实现的功能是哪些， ⾔简意赅 </p>
+</blockquote>
+<p>…</p>
+<h1 id="需求的模块组成及介绍"><a href="#需求的模块组成及介绍" class="headerlink" title="需求的模块组成及介绍*"></a>需求的模块组成及介绍*</h1><blockquote>
+<p>模块1的功能描述，输⼊、输出、处理逻辑、与其他模块的交互逻 辑、处于系统中的逻辑位置、处于部署系统中的物理位置</p>
+</blockquote>
+<ul>
+<li><strong>功能描述</strong></li>
+<li><strong>输入</strong></li>
+<li><strong>输出</strong></li>
+<li><strong>处理逻辑</strong></li>
+<li><strong>交互逻辑</strong></li>
+<li><strong>系统中的逻辑位置</strong></li>
+</ul>
+<h2 id="服务网络云边协同模块：（完成服务网络系统和边缘资源间的数据协同）"><a href="#服务网络云边协同模块：（完成服务网络系统和边缘资源间的数据协同）" class="headerlink" title="服务网络云边协同模块：（完成服务网络系统和边缘资源间的数据协同）"></a>服务网络云边协同模块：（完成服务网络系统和边缘资源间的数据协同）</h2><h3 id="基础模块"><a href="#基础模块" class="headerlink" title="基础模块"></a>基础模块</h3><ol>
+<li><h4 id="云边协同数据通道"><a href="#云边协同数据通道" class="headerlink" title="云边协同数据通道"></a>云边协同数据通道</h4><ul>
+<li><strong>功能描述：</strong>负责云上控制面组件与边端节点之间跨越公网的数据可靠传输</li>
+<li><strong>输入：</strong>服务网络的标准数据交换模型（包括协议、路由、服务资源等）</li>
+<li><strong>输出：</strong>-</li>
+<li><strong>处理逻辑：</strong>通过云边两端点建立TCP连接进行可靠传输</li>
+<li><strong>交互逻辑：</strong>边端程序和云端程序、控制面组件之间进行交互必须调用该通道模块</li>
+<li><strong>系统中的逻辑位置：</strong>连接云边两端的数据通道，一端在云，一端在边，跨越公网</li>
+</ul>
+</li>
+<li><h4 id="边缘控制模块（API-Server-Lite）"><a href="#边缘控制模块（API-Server-Lite）" class="headerlink" title="边缘控制模块（API-Server Lite）"></a>边缘控制模块（API-Server Lite）</h4><ul>
+<li><strong>功能描述：</strong>负责数据汇聚与分发、数据存取控制、边缘模块间协同、自治情况下的边缘节点间协同</li>
+<li><strong>输入：</strong>服务网络的标准数据交换模型</li>
+<li><strong>输出：</strong>-</li>
+<li><strong>处理逻辑：</strong>通过解析命令信息，进行数据存存取和转发</li>
+<li><strong>交互逻辑：</strong>云边协同数据通道、边缘数据持久、边缘数据管理、边缘数据孪生、边缘网络代理</li>
+<li><strong>系统中的逻辑位置：</strong>处于边缘端程序</li>
+</ul>
+</li>
+<li><h4 id="边缘数据持久（ETCD）"><a href="#边缘数据持久（ETCD）" class="headerlink" title="边缘数据持久（ETCD）"></a>边缘数据持久（ETCD）</h4><ul>
+<li><strong>功能描述：</strong>负责将服务和应用的相关数据进行持久化、边缘日志，以支持边缘的自治能力的实现</li>
+<li><strong>输入：</strong>服务数据、应用元数据、边缘资源数据、执行数据等</li>
+<li><strong>输出：</strong>-  </li>
+<li><strong>处理逻辑：</strong>通过类SQL语句进行数据持久化、记录模块执行日志数据</li>
+<li><strong>交互逻辑：</strong>所有相关数据流动之前，必须经过该数据持久模块</li>
+<li><strong>系统中的逻辑位置：</strong>处于边缘端程序</li>
+</ul>
+</li>
+<li><h4 id="边缘应用管理（Kubelet-Lite）"><a href="#边缘应用管理（Kubelet-Lite）" class="headerlink" title="边缘应用管理（Kubelet Lite）"></a>边缘应用管理（Kubelet Lite）</h4><ul>
+<li><strong>功能描述：</strong>通过解析应用元数据对服务应用进行管理（应用的拉取、创建、删除、监控等）</li>
+<li><strong>输入：</strong>应用元数据</li>
+<li><strong>输出：</strong>- </li>
+<li><strong>处理逻辑：</strong>监控当前应用运行状态，比较应用元数据变化信息，通过操作当前边缘节点的资源，进行应用生命周期管理；监控应用状态，上报至边缘数据持久模块和云端</li>
+<li><strong>交互逻辑：</strong>接收云端下发的或数据持久模块的应用元数据，解析应用变更信息，进行应用管理</li>
+<li><strong>系统中的逻辑位置：</strong>处于边缘端程序</li>
+</ul>
+</li>
+<li><h4 id="边缘资源孪生"><a href="#边缘资源孪生" class="headerlink" title="边缘资源孪生"></a>边缘资源孪生</h4><ul>
+<li><strong>功能描述：</strong>监控并收集边缘节点硬件资源、服务资源、应用资源等信息，反馈至服务网络云端</li>
+<li><strong>输入：</strong>边缘数据持久模块</li>
+<li><strong>输出：</strong>硬件资源、服务资源、应用资源等状态信息</li>
+<li><strong>处理逻辑：</strong>监控收集当前边缘节点资源信息、通过边缘数据持久模块获取服务和应用相关状态信息，进行打包上报</li>
+<li><strong>交互逻辑：</strong>与边缘数据持久模块进行交互，收集相关必要信息</li>
+<li><strong>系统中的逻辑位置：</strong>处于边缘端程序</li>
+</ul>
+</li>
+<li><h4 id="边缘网络代理"><a href="#边缘网络代理" class="headerlink" title="边缘网络代理"></a>边缘网络代理</h4><ul>
+<li><strong>功能描述：</strong>边缘用户数据面的通讯组件，维护节点上的网络规则，节点之间建立通道</li>
+<li><strong>输入：</strong>数据交换的用户信息、边缘节点信息等</li>
+<li><strong>输出：</strong>路由信息</li>
+<li><strong>处理逻辑：</strong>通过云端网络组件的协同，帮助用户边缘节点间建立数据通道</li>
+<li><strong>交互逻辑：</strong>边缘数据传输时可以用到此模块</li>
+<li><strong>系统中的逻辑位置：</strong>处于边缘端程序</li>
+</ul>
+</li>
+</ol>
+<h3 id="增强模块"><a href="#增强模块" class="headerlink" title="增强模块"></a>增强模块</h3><ol>
+<li><h3 id="智能部署"><a href="#智能部署" class="headerlink" title="智能部署"></a><strong>智能部署</strong></h3><ol>
+<li><strong>功能描述</strong><ol>
+<li>服务网络根据服务类型、应用场景以及网络和资源状况对服务进行智能部署。</li>
+</ol>
+</li>
+<li><strong>输入：</strong><ol>
+<li>服务ID：ServiceID</li>
+<li>服务使用者ID：ServiceUserID</li>
+<li>服务使用者需求：</li>
+<li>服务网络资源和网络状况</li>
+</ol>
+</li>
+<li><strong>输出</strong><ol>
+<li>服务部署结果</li>
+</ol>
+</li>
+<li><strong>处理逻辑</strong><ol>
+<li>通过服务ID得到服务相关信息及文件</li>
+<li>查看服务使用者的需求，若不为空的话，通过服务信息结合服务使用者需求（低时延、边缘部署等）、服务网络当前资源和网络状况以及服务使用者的物理位置为服务找到合适的部署位置；若为空的话，可以只由服务网络当前资源和网络状况及服务信息来决定部署的位置</li>
+</ol>
+</li>
+<li><strong>交互逻辑</strong><ol>
+<li>与服务注册中心进行交互，得到服务相关信息</li>
+<li>与可观测模块进行交互，通过可观测模块中观测到的网络状况进行服务部署位置的选择</li>
+</ol>
+</li>
+<li><strong>系统中的逻辑位置</strong></li>
+</ol>
+</li>
+<li><h3 id="服务智能调度"><a href="#服务智能调度" class="headerlink" title="服务智能调度"></a>服务智能调度</h3><ol>
+<li><strong>功能描述：</strong><ol>
+<li>当出现网络状况或某些故障时，服务网络会及时采取相应措施对服务进行智能调度，保证服务的可靠、稳定及用户视角的无感</li>
+<li>无依赖性服务：服务使用者对服务进行调用，因为服务一般有多个副本及多地部署，如果之前使用的服务副本1不满足当前场景的使用需求（因为时延或网络资源和负载均衡问题），则智能选择其他可以满足当前场景使用需求的副本进行替换，或者进行新副本的创建</li>
+</ol>
+</li>
+<li><strong>输入：</strong><ol>
+<li>服务ID</li>
+<li>服务使用者ID及其物理位置</li>
+<li>服务使用者需求</li>
+<li>服务网络资源和网络状况</li>
+<li>warning类型</li>
+</ol>
+</li>
+<li><strong>输出</strong><ol>
+<li>路由</li>
+<li>服务API</li>
+</ol>
+</li>
+<li><strong>处理逻辑</strong><ol>
+<li>判断warning类型，是路由负载失衡、服务出现故障还是边缘资源与服务网络断开</li>
+<li>如果是路由负载失衡，对二者间的路由进行重新计算，返回新计算出的路由</li>
+<li>如果是服务出现故障，服务注册中心对应服务ID检查它所有的副本，结合可观测模块进行评估，选择满足服务使用者需求的最优的副本的API返回给服务使用者。如果服务注册中心没有满足需求的副本，则创建服务新副本，通过可观测模块进行新的部署来满足服务使用者的需求，在最后返回符合要求的服务应用API</li>
+<li>如果是边缘资源与服务网络或外部网络断开，会调用告警模块，通知客户进行处理</li>
+<li>通过可观测模块反馈的网络资源和状况结果对服务进行评估，看是否满足服务使用者需求，若不满足服务使用者需求，则向服务注册中心发起服务替换请求</li>
+<li>服务注册中心对应服务ID检查它所有的副本，结合可观测模块进行评估，选择满足服务使用者需求的最优的副本的API返回给服务使用者。如果服务注册中心没有满足需求的副本，则创建服务新副本，通过</li>
+<li>可观测模块进行新的部署来满足服务使用者的需求</li>
+</ol>
+</li>
+<li><strong>交互逻辑</strong><ol>
+<li>与服务注册中心进行交互，得到服务副本信息</li>
+<li>与可观测模块进行交互，通过可观测模块中观测到的网络状况对服务副本进行评估、选择及替换</li>
+</ol>
+</li>
+<li><strong>系统中的逻辑位置</strong></li>
+</ol>
+</li>
+</ol>
+<h2 id="需求模块涉及到的新增数据结构和对已有数据结构的改动"><a href="#需求模块涉及到的新增数据结构和对已有数据结构的改动" class="headerlink" title="需求模块涉及到的新增数据结构和对已有数据结构的改动 *"></a>需求模块涉及到的新增数据结构和对已有数据结构的改动 *</h2><blockquote>
+</blockquote>
+<h1 id="需求涉及模块的部署形态"><a href="#需求涉及模块的部署形态" class="headerlink" title="需求涉及模块的部署形态*"></a>需求涉及模块的部署形态*</h1><h1 id="需求的UCD设计"><a href="#需求的UCD设计" class="headerlink" title="需求的UCD设计*"></a>需求的UCD设计*</h1><h1 id="需求的参与者与开发进度规划"><a href="#需求的参与者与开发进度规划" class="headerlink" title="需求的参与者与开发进度规划"></a>需求的参与者与开发进度规划</h1><p><strong>参与者：</strong>刘小龙 李逸</p>
+<p><strong>进度规划：</strong></p>
+<p>…</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1/" class="category-chain-item">概要设计</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1/">#概要设计</a>
+      
+        <a href="/tags/%E4%BA%91%E8%BE%B9%E5%8D%8F%E5%90%8C/">#云边协同</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>概要设计-云边协同</div>
+      <div>http://example.com/2022/12/24/概要设计-云边协同/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>FROOOOOOO</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年12月24日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/12/05/%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1-%E5%8F%AF%E8%A7%82%E6%B5%8B/" title="概要设计-可观测">
+                        <span class="hidden-mobile">概要设计-可观测</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"Qxo2c2IC6fxpmFzQM37jQCLC-MdYXbMMI","appKey":"qXFKz34vtiN9TmgyjaJFWJXT","path":"window.location.pathname","placeholder":"发表你的看法","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
